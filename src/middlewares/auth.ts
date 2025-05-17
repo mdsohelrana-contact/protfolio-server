@@ -1,28 +1,34 @@
-// import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+import AppError from "./AppError";
+import status from "http-status";
+import { verifyToken } from "../utils/jwtUtils";
+import { JwtPayload } from "jsonwebtoken";
 
-// const auth = (...roles: string[]) => {
-//   return async (req: Request & {user?: any}, res: Response, next: NextFunction) => {
-//     try {
-//       const token = req.headers.authorization;
-//       if (!token) {
-//         throw new AppError(StatusCodes.UNAUTHORIZED, "Your are unauthorized");
-//       }
-//       const verifiedUser = jwtHelpers.verifyToken(
-//         token,
-//         config.jwt.access_secret as Secret
-//       );
+const auth = (...roles: string[]) => {
+  return async (
+    req: Request & { user?: any },
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const token = req.headers.authorization;
+      if (!token) {
+        throw new AppError(status.UNAUTHORIZED, "Your are unauthorized");
+      }
+      const verifiedUser = (await verifyToken(token)) as JwtPayload;
 
-//       req.user = verifiedUser;
+      console.log(verifiedUser);
 
-//       if (roles.length && !roles.includes(verifiedUser.role)) {
-//         throw new AppError(StatusCodes.FORBIDDEN, "Access denied. Forbidden.");
-    //   }
-//       next();
-//       // console.log(verifiedUser);
-//     } catch (error) {
-//       next(error);
-//     }
-//   };
-// };
+      req.user = verifiedUser;
 
-// export default auth;
+      if (roles.length && !roles.includes(verifiedUser.role)) {
+        throw new AppError(status.FORBIDDEN, "Access denied. Forbidden.");
+      }
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
+};
+
+export default auth;

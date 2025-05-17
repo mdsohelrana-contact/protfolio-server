@@ -1,11 +1,11 @@
 import bcrypt from "bcrypt";
 import prisma from "../../shared/prismaClient";
 import { User, UserRole } from "@prisma/client";
-import { generateToken } from "../../utils/jwt";
+import { generateToken } from "../../utils/jwtUtils";
 import AppError from "../../middlewares/AppError";
-import { HttpStatus } from "http-status-ts";
+import status from "http-status";
 
-export const registerUser = async ({ name, email, password, role }: User) => {
+export const registerUser = async ({ name, email, password }: User) => {
   const existingOwner = await prisma.user.findFirst({
     where: {
       role: UserRole.OWNER,
@@ -21,8 +21,7 @@ export const registerUser = async ({ name, email, password, role }: User) => {
       name,
       email,
       password: hashedPassword,
-      // role: UserRole.USER,
-      role: role,
+      role: UserRole.USER,
     },
   });
 
@@ -35,7 +34,7 @@ export const loginUser = async ({ email, password }: any) => {
 
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) {
-    throw new AppError(HttpStatus.BAD_REQUEST, "Invalid credentials");
+    throw new AppError(status.BAD_REQUEST, "Invalid credentials");
   }
 
   const accessToken = generateToken(user);

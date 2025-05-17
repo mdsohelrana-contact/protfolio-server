@@ -48,8 +48,9 @@ model Projects {
   image       String
   tags        String[]
   category    ProjectCategory
-  demoUrl     String
-  githubUrl   String
+  demoUrl     String          @unique
+  githubUrl   String          @unique
+  isDeleted   Boolean         @default(false)
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 
@@ -73,7 +74,7 @@ model Skill {
   skillCategoryId String
   skillCategory   SkillCategory @relation(fields: [skillCategoryId], references: [id])
 
-   @@map("skills")
+  @@map("skills")
 }
 
 // Review model
@@ -86,8 +87,8 @@ model Testimonial {
   rating    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-   @@map("testimonials")
+
+  @@map("testimonials")
 }
 
 // contact information model 
@@ -101,7 +102,7 @@ model ContactInfo {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-     @@map("contactInfo")
+  @@map("contactInfo")
 }
 
 // ContactMessage  model

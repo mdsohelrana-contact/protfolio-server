@@ -8,3 +8,13 @@ export const generateToken = (user: any) => {
     expiresIn: "1d",
   });
 };
+
+
+export const verifyToken = (token: string) => {
+  try {
+    const decoded = jwt.verify(token, secret);
+    return decoded;
+  } catch (error) {
+    throw new Error("Invalid or expired token");
+  }
+};
