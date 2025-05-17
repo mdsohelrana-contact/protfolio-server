@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProjectCategory {
+  FULLSTACK
+  FRONTEND
+  BACKEND
+  LANDING_PAGE
+  API
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  USER
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole @default(OWNER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Projects model
+model Projects {
+  id          String          @id @default(uuid())
+  title       String
+  description String
+  image       String
+  tags        String[]
+  category    ProjectCategory
+  demoUrl     String
+  githubUrl   String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+// skills category model
+model SkillCategory {
+  id     String  @id @default(uuid())
+  label  String
+  color  String?
+  skills Skill[]
+}
+
+// skills model
+model Skill {
+  id              String        @id @default(uuid())
+  name            String
+  skillCategoryId String
+  skillCategory   SkillCategory @relation(fields: [skillCategoryId], references: [id])
+}
+
+// Review model
+model Testimonial {
+  id        String   @id @default(uuid())
+  name      String
+  position  String
+  image     String
+  quote     String
+  rating    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// contact information model 
+model ContactInfo {
+  id              String   @id @default(uuid())
+  mobileNumber    String
+  emailAddress    String
+  gitHubProfile   String
+  linkedInProfile String
+  address         String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// ContactMessage  model
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+}
