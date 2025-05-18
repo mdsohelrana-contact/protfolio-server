@@ -8,7 +8,7 @@ import { projectSchema } from "./project.validation";
 const router = express.Router();
 
 router.get("/", ProjectControllers.getAllProjects);
-router.get("/deleted", ProjectControllers.getDeletedProjects);
+router.get("/deleted", auth("OWNER"), ProjectControllers.getDeletedProjects);
 
 router.post(
   "/",

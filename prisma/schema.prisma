@@ -36,6 +36,7 @@ model User {
   role      UserRole @default(OWNER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Blog      Blog[]
 
   @@map("user")
 }
@@ -75,6 +76,23 @@ model Skill {
   skillCategory   SkillCategory @relation(fields: [skillCategoryId], references: [id], onDelete: Cascade)
 
   @@map("skills")
+}
+
+// blog model
+model Blog {
+  id        String   @id @default(uuid())
+  title     String
+  slug      String   @unique
+  content   String
+  imageUrl  String?
+  tags      String[]
+  authorId  String
+  isDeleted Boolean @default(false)
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("blogs")
 }
 
 // Review model

@@ -46,7 +46,7 @@ const getDeletedProjects = catchAsync(async (req: Request, res: Response) => {
     category = categoryQuery;
   }
 
-  const result = await ProjectServices.getDeletedProjects(category);
+  const result = await ProjectServices.getDeletedProjects(category, req.user!);
 
   responseHandler(res, true, "Deleted projects fetched successfully", result);
 });
