@@ -87,12 +87,40 @@ model Blog {
   imageUrl  String?
   tags      String[]
   authorId  String
-  isDeleted Boolean @default(false)
+  isDeleted Boolean  @default(false)
   author    User     @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("blogs")
+}
+
+model AboutMe {
+  id           String   @id @default(uuid())
+  title        String
+  bio          String
+  profileImage String?
+  resumeLink   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("aboutMe")
+}
+
+model Experience {
+  id          String    @id @default(uuid())
+  position    String
+  company     String
+  description String
+  year        Int
+  startDate   DateTime
+  endDate     DateTime?
+  isCurrent   Boolean   @default(false)
+  technologies String[] 
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("experiences")
 }
 
 // Review model
