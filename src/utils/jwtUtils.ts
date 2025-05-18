@@ -1,16 +1,14 @@
-import jwt from "jsonwebtoken";
-import config from "../config";
+import jwt, { Secret } from "jsonwebtoken";
 
-const secret = config.jwt.accessTokenSecret as string;
 
-export const generateToken = (user: any) => {
+export const generateToken = (user: any,secret:Secret) => {
   return jwt.sign({ id: user.id, role: user.role, email: user.email }, secret, {
     expiresIn: "1d",
   });
 };
 
 
-export const verifyToken = (token: string) => {
+export const verifyToken = (token: string,secret:Secret) => {
   try {
     const decoded = jwt.verify(token, secret);
     return decoded;

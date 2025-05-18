@@ -3,6 +3,7 @@ import AppError from "./AppError";
 import status from "http-status";
 import { verifyToken } from "../utils/jwtUtils";
 import { JwtPayload } from "jsonwebtoken";
+import config from "../config";
 
 const auth = (...roles: string[]) => {
   return async (
@@ -15,7 +16,10 @@ const auth = (...roles: string[]) => {
       if (!token) {
         throw new AppError(status.UNAUTHORIZED, "Your are unauthorized");
       }
-      const verifiedUser = (await verifyToken(token)) as JwtPayload;
+      const verifiedUser = (await verifyToken(
+        token,
+        config.accessToken.secret as string
+      )) as JwtPayload;
 
       // console.log(verifiedUser);
 

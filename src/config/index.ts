@@ -8,7 +8,19 @@ export default {
   port: process.env.PORT,
   nodeEnv: process.env.NODE_ENV,
   saltRound: process.env.SALT_ROUND,
-  jwt: {
-    accessTokenSecret: process.env.JWT_ACCESS_TOKEN_SECRET,
+  clientUrl:process.env.CLIENT_URL,
+  accessToken: {
+    secret: process.env.ACCESS_TOKEN_SECRET,
+    expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
   },
+  refreshToken: {
+    secret: process.env.REFRESH_TOKEN_SECRET,
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
+  },
+  resetPassword: {
+    secret: process.env.RESET_PASSWORD_SECRET,
+    expiresIn: process.env.RESET_PASSWORD_EXPIRES_IN,
+    resetPassLink: process.env.RESET_PASSWORD_LINK,
+  },
+
 };
