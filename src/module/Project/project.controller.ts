@@ -37,6 +37,20 @@ const getAllProjects = catchAsync(async (req: Request, res: Response) => {
   responseHandler(res, true, "Projects fetched successfully", result);
 });
 
+// get deleted projects
+const getDeletedProjects = catchAsync(async (req: Request, res: Response) => {
+  const categoryQuery = req.query.category as string;
+
+  let category: string | undefined = undefined;
+  if (categoryQuery && allowedCategories.includes(categoryQuery)) {
+    category = categoryQuery;
+  }
+
+  const result = await ProjectServices.getDeletedProjects(category);
+
+  responseHandler(res, true, "Deleted projects fetched successfully", result);
+});
+
 // get single project
 const getSingleProject = catchAsync(async (req: Request, res: Response) => {
   const result = await ProjectServices.getSingleProject(req.params.id);
@@ -77,12 +91,12 @@ const softDeleteProject = catchAsync(async (req: Request, res: Response) => {
   responseHandler(res, true, "Project deleted successfully", result);
 });
 
-
 export const ProjectControllers = {
   createProject,
   getAllProjects,
   getSingleProject,
   updateProject,
   hardDeleteProject,
-  softDeleteProject
+  softDeleteProject,
+  getDeletedProjects,
 };

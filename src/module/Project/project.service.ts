@@ -34,7 +34,7 @@ const getAllProjects = async (category: string | undefined) => {
       },
       orderBy: {
         createdAt: "desc",
-      }
+      },
     });
   }
 
@@ -44,19 +44,48 @@ const getAllProjects = async (category: string | undefined) => {
     },
     orderBy: {
       createdAt: "desc",
-    }
+    },
   });
 };
 
 // Get a single project
 const getSingleProject = async (projectId: string) => {
-  const result = await prisma.projects.findUnique({ where: { id: projectId } });
+  const result = await prisma.projects.findUnique({
+    where: {
+      id: projectId,
+      isDeleted: false,
+    },
+  });
 
   if (!result) {
     throw new AppError(status.NOT_FOUND, "Project not found");
   }
 
   return result;
+};
+
+// get deleted projects
+const getDeletedProjects = async (category: string | undefined) => {
+  if (category) {
+    return await prisma.projects.findMany({
+      where: {
+        category: category as ProjectCategory,
+        isDeleted: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  }
+
+  return await prisma.projects.findMany({
+    where: {
+      isDeleted: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 };
 
 // Update a project
@@ -151,4 +180,5 @@ export const ProjectServices = {
   updateProject,
   hardDeleteProject,
   softDeleteProject,
+  getDeletedProjects,
 };

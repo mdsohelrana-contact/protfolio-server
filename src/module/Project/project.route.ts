@@ -7,9 +7,8 @@ import { projectSchema } from "./project.validation";
 
 const router = express.Router();
 
-router.get("/:id", ProjectControllers.getSingleProject);
-
 router.get("/", ProjectControllers.getAllProjects);
+router.get("/deleted", ProjectControllers.getDeletedProjects);
 
 router.post(
   "/",
@@ -26,11 +25,9 @@ router.patch(
 );
 
 router.delete("/force/:id", auth("OWNER"), ProjectControllers.hardDeleteProject);
+router.delete("/soft/:id", auth("OWNER"), ProjectControllers.softDeleteProject);
 
-router.delete(
-  "/soft/:id",
-  auth("OWNER"),
-  ProjectControllers.softDeleteProject
-);
+
+router.get("/:id", ProjectControllers.getSingleProject);
 
 export const ProjectRoutes = router;
