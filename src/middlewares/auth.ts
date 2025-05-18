@@ -17,7 +17,7 @@ const auth = (...roles: string[]) => {
       }
       const verifiedUser = (await verifyToken(token)) as JwtPayload;
 
-      console.log(verifiedUser);
+      // console.log(verifiedUser);
 
       req.user = verifiedUser;
 
