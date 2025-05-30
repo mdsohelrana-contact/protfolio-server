@@ -31,6 +31,7 @@ const getAllProjects = async (category: string | undefined) => {
       where: {
         category: category as ProjectCategory,
         isDeleted: false,
+        isFeatured: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -41,6 +42,7 @@ const getAllProjects = async (category: string | undefined) => {
   return await prisma.projects.findMany({
     where: {
       isDeleted: false,
+       isFeatured: true,
     },
     orderBy: {
       createdAt: "desc",
@@ -53,7 +55,6 @@ const getSingleProject = async (projectId: string) => {
   const result = await prisma.projects.findUnique({
     where: {
       id: projectId,
-      isDeleted: false,
     },
   });
 

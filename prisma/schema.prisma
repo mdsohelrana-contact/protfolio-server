@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   // output   = "../generated/prisma"
@@ -43,17 +37,21 @@ model User {
 
 // Projects model
 model Projects {
-  id          String          @id @default(uuid())
-  title       String
-  description String
-  image       String
-  tags        String[]
-  category    ProjectCategory
-  demoUrl     String          @unique
-  githubUrl   String          @unique
-  isDeleted   Boolean         @default(false)
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  id                    String          @id @default(uuid())
+  title                 String
+  description           String
+  image                 String
+  tags                  String[]
+  category              ProjectCategory
+  demoUrl               String          @unique
+  githubUrl             String          @unique
+  keyFeatures           String[]
+  technicalDetails      String?
+  challengesAndSolution String?
+  isDeleted             Boolean         @default(false)
+  isFeatured            Boolean         @default(true)
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
 
   @@map("projects")
 }
@@ -62,6 +60,7 @@ model Projects {
 model SkillCategory {
   id     String  @id @default(uuid())
   label  String
+  icon   String
   color  String?
   skills Skill[]
 
@@ -88,6 +87,7 @@ model Blog {
   tags      String[]
   authorId  String
   isDeleted Boolean  @default(false)
+  isPublish Boolean  @default(false)
   author    User     @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -108,34 +108,36 @@ model AboutMe {
 }
 
 model Experience {
-  id          String    @id @default(uuid())
-  position    String
-  company     String
-  description String
-  year        Int
-  startDate   DateTime
-  endDate     DateTime?
-  isCurrent   Boolean   @default(false)
-  technologies String[] 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id                  String    @id @default(uuid())
+  position            String
+  company             String
+  description         String
+  year                Int
+  startDate           DateTime
+  endDate             DateTime?
+  isCurrent           Boolean   @default(false)
+  technologies        String[]  @default([])
+  keyAchievements     String[]  @default([])
+  keyResponsibilities String[]  @default([])
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
   @@map("experiences")
 }
 
 // Review model
-model Testimonial {
-  id        String   @id @default(uuid())
-  name      String
-  position  String
-  image     String
-  quote     String
-  rating    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// model Testimonial {
+//   id        String   @id @default(uuid())
+//   name      String
+//   position  String
+//   image     String
+//   quote     String
+//   rating    Int
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
 
-  @@map("testimonials")
-}
+//   @@map("testimonials")
+// }
 
 // contact information model 
 model ContactInfo {

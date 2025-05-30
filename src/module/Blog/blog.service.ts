@@ -8,9 +8,14 @@ import status from "http-status";
 const createBlog = async (payload: Blog, user: JwtPayload) => {
   await checkUserRole(user.email, ["OWNER"]);
 
-  const existing = await prisma.blog.findFirst({ where: { title: payload.title } });
+  const existing = await prisma.blog.findFirst({
+    where: { title: payload.title },
+  });
   if (existing) {
-    throw new AppError(status.CONFLICT, "A blog with the same title already exists.");
+    throw new AppError(
+      status.CONFLICT,
+      "A blog with the same title already exists."
+    );
   }
 
   return await prisma.blog.create({
@@ -24,8 +29,13 @@ const createBlog = async (payload: Blog, user: JwtPayload) => {
 
 const getAllBlogs = async () => {
   return await prisma.blog.findMany({
-    where: { isDeleted: false },
-    orderBy: { createdAt: "desc" },
+    where: {
+      isDeleted: false,
+      isPublish: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 };
 

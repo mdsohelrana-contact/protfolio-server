@@ -15,7 +15,9 @@ const registerUser = async ({ name, email, password }: User) => {
     },
   });
 
-  if (existingOwner) throw new Error("Owner already exists");
+  if (existingOwner) {
+    throw new AppError(status.CONFLICT, "Owner already exists");
+  }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -24,7 +26,7 @@ const registerUser = async ({ name, email, password }: User) => {
       name,
       email,
       password: hashedPassword,
-      role: UserRole.USER,
+      role: UserRole.OWNER,
     },
   });
 
