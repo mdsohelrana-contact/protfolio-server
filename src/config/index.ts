@@ -22,5 +22,9 @@ export default {
     expiresIn: process.env.RESET_PASSWORD_EXPIRES_IN,
     resetPassLink: process.env.RESET_PASSWORD_LINK,
   },
-
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    apiSecret: process.env.CLOUDINARY_API_SECRET,
+  },
 };

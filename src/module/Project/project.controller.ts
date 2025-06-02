@@ -14,9 +14,13 @@ const allowedCategories = [
 // create project
 const createProject = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
+  console.log(req.body)
+
+  
   if (!user) {
     return responseHandler(res, false, "Unauthorized: user not found", null);
   }
+  
 
   const result = await ProjectServices.createProject(req.body, user);
 

@@ -42,7 +42,7 @@ const getAllProjects = async (category: string | undefined) => {
   return await prisma.projects.findMany({
     where: {
       isDeleted: false,
-       isFeatured: true,
+      isFeatured: true,
     },
     orderBy: {
       createdAt: "desc",
@@ -66,8 +66,10 @@ const getSingleProject = async (projectId: string) => {
 };
 
 // get deleted projects
-const getDeletedProjects = async (category: string | undefined, user: JwtPayload) => {
-
+const getDeletedProjects = async (
+  category: string | undefined,
+  user: JwtPayload
+) => {
   await checkUserRole(user.email, ["OWNER"]);
 
   if (category) {
