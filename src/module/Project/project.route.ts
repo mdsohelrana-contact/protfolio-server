@@ -27,9 +27,9 @@ router.post(
         throw new AppError(status.BAD_REQUEST, "No file uploaded");
       }
 
-      // cloudinary
-      const filePath = path.join(file.destination, file.filename);
-      const result: any = await uploadToCloudinary(filePath, "projects");
+      // // cloudinary
+      // const filePath = path.join(file.destination, file.filename);
+      const result: any = await uploadToCloudinary(file.buffer, "projects");
 
       req.body.image = result.secure_url;
 
@@ -68,9 +68,49 @@ router.post(
 
 router.patch(
   "/:id",
-  validateRequest(projectSchema.UpdateProjectSchema),
-  auth("OWNER"),
-  ProjectControllers.updateProject
+  upload.single("file"), // 1. Handle optional image upload
+
+  async (req, res, next) => {
+    try {
+      // 2. Handle optional image upload
+      const file = req.file;
+      if (file) {
+        const result: any = await uploadToCloudinary(file.buffer, "projects");
+        req.body.image = result.secure_url;
+      }
+
+      // 3. Parse `data` JSON string if present
+      if (req.body.data && typeof req.body.data === "string") {
+        req.body.data = JSON.parse(req.body.data);
+      }
+
+      // 4. Parse tags and keyFeatures if passed as JSON strings
+      if (req.body.data?.tags && typeof req.body.data.tags === "string") {
+        req.body.data.tags = JSON.parse(req.body.data.tags);
+      }
+
+      if (
+        req.body.data?.keyFeatures &&
+        typeof req.body.data.keyFeatures === "string"
+      ) {
+        req.body.data.keyFeatures = JSON.parse(req.body.data.keyFeatures);
+      }
+
+      // 5. Final body merge
+      req.body = {
+        ...req.body.data,
+        ...(req.body.image ? { image: req.body.image } : {}),
+      };
+
+      next();
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  validateRequest(projectSchema.UpdateProjectSchema), // 6. Validate schema
+  auth("OWNER"), // 7. Auth middleware
+  ProjectControllers.updateProject // 8. Final handler
 );
 
 router.delete(
@@ -79,6 +119,8 @@ router.delete(
   ProjectControllers.hardDeleteProject
 );
 router.delete("/soft/:id", auth("OWNER"), ProjectControllers.softDeleteProject);
+
+router.get("/:id/restore", auth("OWNER"), ProjectControllers.restoreProject);
 
 router.get("/:id", ProjectControllers.getSingleProject);
 

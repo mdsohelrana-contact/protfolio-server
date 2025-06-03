@@ -179,6 +179,31 @@ const softDeleteProject = async (projectId: string, user: JwtPayload) => {
   });
 };
 
+// restore a project
+const restoreProject = async (projectId: string, user: JwtPayload) => {
+  await checkUserRole(user.email, ["OWNER"]);
+
+  const exists = await prisma.projects.findFirst({
+    where: {
+      id: projectId,
+    },
+  });
+
+  if (!exists) {
+    throw new AppError(status.NOT_FOUND, "Project not found");
+  }
+
+  return await prisma.projects.update({
+    where: {
+      id: projectId,
+    },
+    data: {
+      isDeleted: false,
+    },
+  });
+
+};
+
 export const ProjectServices = {
   createProject,
   getAllProjects,
@@ -187,4 +212,5 @@ export const ProjectServices = {
   hardDeleteProject,
   softDeleteProject,
   getDeletedProjects,
+  restoreProject
 };
