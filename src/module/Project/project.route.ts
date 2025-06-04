@@ -8,7 +8,7 @@ import upload from "../../middlewares/multer";
 import AppError from "../../middlewares/AppError";
 import status from "http-status";
 import path from "path";
-import uploadToCloudinary from "../../utils/uploadToCloudinary";
+import uploadBufferToCloudinary from "../../utils/uploadToCloudinary";
 
 const router = express.Router();
 
@@ -17,21 +17,22 @@ router.get("/deleted", auth("OWNER"), ProjectControllers.getDeletedProjects);
 
 router.post(
   "/",
-  upload.single("file"),
+  upload.array("files"),
 
   async (req, res, next) => {
     try {
-      const file = req.file;
+      const files = req.files as Express.Multer.File[];
 
-      if (!file) {
+      if (!files || files.length === 0) {
         throw new AppError(status.BAD_REQUEST, "No file uploaded");
       }
 
-      // // cloudinary
-      // const filePath = path.join(file.destination, file.filename);
-      const result: any = await uploadToCloudinary(file.buffer, "projects");
+      const uploadPromise = files.map((file) =>
+        uploadBufferToCloudinary(file.buffer, "projects")
+      );
 
-      req.body.image = result.secure_url;
+      const uploadResults = await Promise.all(uploadPromise);
+      const imageUrls = uploadResults.map((result: any) => result.secure_url);
 
       //  parse
       if (req.body.data && typeof req.body.data === "string") {
@@ -51,7 +52,7 @@ router.post(
 
       req.body = {
         ...req.body.data,
-        image: req.body.image,
+        images: imageUrls,
       };
 
       next();
@@ -68,23 +69,28 @@ router.post(
 
 router.patch(
   "/:id",
-  upload.single("file"), // 1. Handle optional image upload
+  upload.array("files"),
 
   async (req, res, next) => {
     try {
-      // 2. Handle optional image upload
-      const file = req.file;
-      if (file) {
-        const result: any = await uploadToCloudinary(file.buffer, "projects");
-        req.body.image = result.secure_url;
+      const files = req.files as Express.Multer.File[];
+
+      let imageUrls: string[] = [];
+
+      if (files && files.length > 0) {
+        const uploadPromise = files.map((file) =>
+          uploadBufferToCloudinary(file.buffer, "projects")
+        );
+        const uploadResults = await Promise.all(uploadPromise);
+        imageUrls = uploadResults.map((result: any) => result.secure_url);
       }
 
-      // 3. Parse `data` JSON string if present
+      //  Parse `data` JSON string if present
       if (req.body.data && typeof req.body.data === "string") {
         req.body.data = JSON.parse(req.body.data);
       }
 
-      // 4. Parse tags and keyFeatures if passed as JSON strings
+      // Parse tags and keyFeatures if passed as JSON strings
       if (req.body.data?.tags && typeof req.body.data.tags === "string") {
         req.body.data.tags = JSON.parse(req.body.data.tags);
       }
@@ -96,10 +102,9 @@ router.patch(
         req.body.data.keyFeatures = JSON.parse(req.body.data.keyFeatures);
       }
 
-      // 5. Final body merge
       req.body = {
         ...req.body.data,
-        ...(req.body.image ? { image: req.body.image } : {}),
+        ...(imageUrls.length > 0 && { images: imageUrls }),
       };
 
       next();
@@ -120,7 +125,7 @@ router.delete(
 );
 router.delete("/soft/:id", auth("OWNER"), ProjectControllers.softDeleteProject);
 
-router.get("/:id/restore", auth("OWNER"), ProjectControllers.restoreProject);
+router.patch("/:id/restore", auth("OWNER"), ProjectControllers.restoreProject);
 
 router.get("/:id", ProjectControllers.getSingleProject);
 

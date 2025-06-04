@@ -40,7 +40,7 @@ model Projects {
   id                    String          @id @default(uuid())
   title                 String
   description           String
-  image                 String
+  images                String[]
   tags                  String[]
   category              ProjectCategory
   demoUrl               String          @unique
@@ -48,6 +48,7 @@ model Projects {
   keyFeatures           String[]
   technicalDetails      String?
   challengesAndSolution String?
+  views                 Int             @default(0)
   isDeleted             Boolean         @default(false)
   isFeatured            Boolean         @default(true)
   createdAt             DateTime        @default(now())
@@ -77,20 +78,66 @@ model Skill {
   @@map("skills")
 }
 
+// technology enum as a fullstack web developer
+enum Technology {
+  HTML
+  CSS
+  Tailwind
+  JavaScript
+  TypeScript
+  React
+  NextJS
+  Redux
+  Zustand
+  NodeJS
+  Express
+  NestJS
+  JWT
+  OAuth
+  Bcrypt
+  Zod
+  MongoDB
+  Mongoose
+  PostgreSQL
+  Prisma
+  ShadcnUI
+  FramerMotion
+  AOS
+  Git
+  GitHub
+  VSCode
+  Postman
+  Docker
+  Vercel
+  Netlify
+  Render
+  Railway
+  Firebase
+  AWS
+  Jest
+  ReactTestingLibrary
+  WebSockets
+  SocketIO
+  RESTAPI
+  GraphQL
+}
+
 // blog model
 model Blog {
-  id        String   @id @default(uuid())
-  title     String
-  slug      String   @unique
-  content   String
-  imageUrl  String?
-  tags      String[]
-  authorId  String
-  isDeleted Boolean  @default(false)
-  isPublish Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String     @id @default(uuid())
+  title      String
+  slug       String     @unique
+  content    String
+  technology Technology
+  imageUrls  String[]
+  tags       String[]
+  views      Int        @default(0)
+  authorId   String
+  isDeleted  Boolean    @default(false)
+  isPublish  Boolean    @default(false)
+  author     User       @relation(fields: [authorId], references: [id])
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 
   @@map("blogs")
 }
@@ -124,20 +171,6 @@ model Experience {
 
   @@map("experiences")
 }
-
-// Review model
-// model Testimonial {
-//   id        String   @id @default(uuid())
-//   name      String
-//   position  String
-//   image     String
-//   quote     String
-//   rating    Int
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-
-//   @@map("testimonials")
-// }
 
 // contact information model 
 model ContactInfo {

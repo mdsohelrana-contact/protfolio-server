@@ -13,7 +13,9 @@ const CreateProjectSchema = z.object({
     description: z
       .string()
       .min(10, "Description must be at least 10 characters"),
-    image: z.string().url("Image must be a valid URL"),
+    images: z
+      .array(z.string().url("Image must be a valid URL"))
+      .nonempty("At least one image is required"),
     tags: z.array(z.string().min(1)).nonempty("At least one tag is required"),
     category: ProjectCategoryEnum.refine((val) => !!val, {
       message: "Category is required and must be a valid value",
@@ -30,7 +32,7 @@ const UpdateProjectSchema = z.object({
       .string()
       .min(10, "Description must be at least 10 characters")
       .optional(),
-    image: z.string().url("Image must be a valid URL").optional(),
+    images: z.array(z.string().url("Image must be a valid URL")).optional(),
     tags: z.array(z.string().min(1)).optional(),
     category: ProjectCategoryEnum.refine((val) => !!val, {
       message: "Invalid category value",
