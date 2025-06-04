@@ -8,7 +8,6 @@ import status from "http-status";
 const createBlog = async (payload: Blog, user: JwtPayload) => {
   await checkUserRole(user.email, ["OWNER"]);
 
-
   const existing = await prisma.blog.findFirst({
     where: { title: payload.title },
   });
@@ -99,6 +98,21 @@ const softDeleteBlog = async (blogId: string, user: JwtPayload) => {
   });
 };
 
+const restoreBlog = async (blogId: string, user: JwtPayload) => {
+  await checkUserRole(user.email, ["OWNER"]);
+
+  const blog = await prisma.blog.findUnique({ where: { id: blogId } });
+
+  if (!blog) {
+    throw new AppError(status.NOT_FOUND, "Blog not found");
+  }
+
+  return await prisma.blog.update({
+    where: { id: blogId },
+    data: { isDeleted: false },
+  });
+};
+
 export const blogService = {
   createBlog,
   getAllBlogs,
@@ -107,4 +121,5 @@ export const blogService = {
   updateBlog,
   hardDeleteBlog,
   softDeleteBlog,
+  restoreBlog,
 };

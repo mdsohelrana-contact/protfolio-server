@@ -49,6 +49,14 @@ const softDeleteBlog = catchAsync(async (req: Request, res: Response) => {
   responseHandler(res, true, "Blog deleted successfully");
 });
 
+// restoreBlog
+const restoreBlog = catchAsync(async (req: Request, res: Response) => {
+  await blogService.restoreBlog(req.params.id, req.user!);
+
+  responseHandler(res, true, "Blog restored successfully");
+});
+
+
 export const BlogControllers = {
   createBlog,
   getAllBlogs,
@@ -57,4 +65,5 @@ export const BlogControllers = {
   updateBlog,
   hardDeleteBlog,
   softDeleteBlog,
+  restoreBlog
 };
