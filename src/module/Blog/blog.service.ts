@@ -8,6 +8,7 @@ import status from "http-status";
 const createBlog = async (payload: Blog, user: JwtPayload) => {
   await checkUserRole(user.email, ["OWNER"]);
 
+
   const existing = await prisma.blog.findFirst({
     where: { title: payload.title },
   });

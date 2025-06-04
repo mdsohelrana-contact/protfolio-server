@@ -10,8 +10,9 @@ const router = express.Router();
 
 router.get("/", BlogControllers.getAllBlogs);
 
-router.post("/",  
-    upload.array("files"),
+router.post(
+  "/",
+  upload.array("files"),
 
   async (req, res, next) => {
     try {
@@ -33,7 +34,6 @@ router.post("/",
         req.body.data = JSON.parse(req.body.data);
       }
 
-
       req.body = {
         ...req.body.data,
         imageUrls: imageUrls,
@@ -43,7 +43,10 @@ router.post("/",
     } catch (error) {
       next(error);
     }
-  }, auth("OWNER"), BlogControllers.createBlog);
+  },
+  auth("OWNER"),
+  BlogControllers.createBlog
+);
 
 router.get("/deleted", auth("OWNER"), BlogControllers.getAllDeletedBlogs);
 
@@ -52,7 +55,6 @@ router.patch("/:id", auth("OWNER"), BlogControllers.updateBlog);
 router.delete("/force/:id", auth("OWNER"), BlogControllers.hardDeleteBlog);
 
 router.delete("/soft/:id", auth("OWNER"), BlogControllers.softDeleteBlog);
-
 
 router.get("/:id", BlogControllers.getSingleBlog);
 
