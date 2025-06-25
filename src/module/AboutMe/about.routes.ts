@@ -5,8 +5,11 @@ import { AboutControllers } from "./about.controller";
 const router = express.Router();
 
 
-router.put("/", auth("OWNER"), AboutControllers.createOrUpdate);
+router.patch("/:aboutId", auth("OWNER"), AboutControllers.updateAbout);
 
-router.get("/", AboutControllers.getAboutMe);
+router.delete("/:aboutId", auth("OWNER"), AboutControllers.deleteAbout);
+router.post("/", auth("OWNER"), AboutControllers.createAbout);
+
+router.get("/", AboutControllers.getAbout);
 
 export const AboutMeRoutes = router;

@@ -76,6 +76,7 @@ enum SocialLinkTypes {
   FACEBOOK
   YOUTUBE
   WEBSITE
+  RESUME
 }
 
 model User {
@@ -152,18 +153,9 @@ model Blog {
 }
 
 model AboutMe {
-  id           String          @id @default(uuid())
-  title        String
-  section      SectionType     @default(HERO)
-  bio          String
-  profileImage String?
-  resumeLink   String?
-  socialLinks  SocialLinkTypes @default(GITHUB)
-
-  address     String? @default("Rajshahi, Bangladesh")
-  phoneNumber String? @default("+8801619830567")
-  email       String? @default("ranaot56@gmail.com")
-
+  id      String      @id @default(uuid())
+  section SectionType @default(HERO)
+  bio     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -189,14 +181,16 @@ model Experience {
 }
 
 model ContactInfo {
-  id              String   @id @default(uuid())
-  mobileNumber    String
-  emailAddress    String
-  gitHubProfile   String
-  linkedInProfile String
-  address         String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id String @id @default(uuid())
+
+  profileImage String?
+  socialLinks  SocialLinkTypes @default(GITHUB)
+
+  address     String?  @default("Rajshahi, Bangladesh")
+  phoneNumber String?  @default("+8801619830567")
+  email       String?  @default("ranaot56@gmail.com")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("contactInfo")
 }
