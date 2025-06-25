@@ -153,11 +153,11 @@ model Blog {
 }
 
 model AboutMe {
-  id      String      @id @default(uuid())
-  section SectionType @default(HERO)
-  bio     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String      @id @default(uuid())
+  section   SectionType @default(HERO)
+  bio       String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 
   @@map("aboutMe")
 }
@@ -185,6 +185,7 @@ model ContactInfo {
 
   profileImage String?
   socialLinks  SocialLinkTypes @default(GITHUB)
+  resumeLink   String?
 
   address     String?  @default("Rajshahi, Bangladesh")
   phoneNumber String?  @default("+8801619830567")

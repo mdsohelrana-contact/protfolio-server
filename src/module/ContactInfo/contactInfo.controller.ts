@@ -28,7 +28,6 @@ const updateContactInfo = catchAsync(async (req: Request, res: Response) => {
   responseHandler(res, true, "Contact info updated successfully", result);
 });
 
-
 export const ContactInfoControllers = {
   createContactInfo,
   getContactInfo,

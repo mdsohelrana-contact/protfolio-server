@@ -8,8 +8,6 @@ import AppError from "../../middlewares/AppError";
 const createContactInfo = async (payload: ContactInfo, user: JwtPayload) => {
   await checkUserRole(user.email, ["OWNER"]);
 
-  console.log(payload)
-
   if (payload.id) {
     await prisma.contactInfo.update({
       where: { id: payload.id },
