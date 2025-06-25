@@ -28,15 +28,9 @@ const updateContactInfo = catchAsync(async (req: Request, res: Response) => {
   responseHandler(res, true, "Contact info updated successfully", result);
 });
 
-const deleteContactInfo = catchAsync(async (req: Request, res: Response) => {
-  await contactInfoService.deleteContactInfo(req.params.id, req.user!);
-
-  responseHandler(res, true, "Contact info deleted successfully");
-});
 
 export const ContactInfoControllers = {
   createContactInfo,
   getContactInfo,
   updateContactInfo,
-  deleteContactInfo,
 };
