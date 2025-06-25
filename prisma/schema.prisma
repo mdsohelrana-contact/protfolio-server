@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  // output   = "../generated/prisma"
 }
 
 datasource db {
@@ -18,67 +17,8 @@ enum ProjectCategory {
 
 enum UserRole {
   OWNER
-  ADMIN
-  USER
 }
 
-model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      UserRole @default(OWNER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Blog      Blog[]
-
-  @@map("user")
-}
-
-// Projects model
-model Projects {
-  id                    String          @id @default(uuid())
-  title                 String
-  description           String
-  images                String[]
-  tags                  String[]
-  category              ProjectCategory
-  demoUrl               String          @unique
-  githubUrl             String          @unique
-  keyFeatures           String[]
-  technicalDetails      String?
-  challengesAndSolution String?
-  views                 Int             @default(0)
-  isDeleted             Boolean         @default(false)
-  isFeatured            Boolean         @default(true)
-  createdAt             DateTime        @default(now())
-  updatedAt             DateTime        @updatedAt
-
-  @@map("projects")
-}
-
-// skills category model
-model SkillCategory {
-  id     String  @id @default(uuid())
-  label  String
-  icon   String
-  color  String?
-  skills Skill[]
-
-  @@map("skillCategories")
-}
-
-// skills model
-model Skill {
-  id              String        @id @default(uuid())
-  name            String
-  skillCategoryId String
-  skillCategory   SkillCategory @relation(fields: [skillCategoryId], references: [id], onDelete: Cascade)
-
-  @@map("skills")
-}
-
-// technology enum as a fullstack web developer
 enum Technology {
   HTML
   CSS
@@ -122,34 +62,110 @@ enum Technology {
   GraphQL
 }
 
-// blog model
+enum SectionType {
+  HERO
+  ABOUT
+  CONTACT
+}
+
+enum SocialLinkTypes {
+  GITHUB
+  LINKEDIN
+  TWITTER
+  INSTAGRAM
+  FACEBOOK
+  YOUTUBE
+  WEBSITE
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole @default(OWNER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Blog      Blog[]
+
+  @@map("user")
+}
+
+model Projects {
+  id             String          @id @default(uuid())
+  title          String
+  description    String
+  tags           String[]
+  category       ProjectCategory @default(FULLSTACK)
+  demoUrl        String          @unique
+  githubUrl      String          @unique
+  projectContent String?
+
+  isDeleted  Boolean @default(false)
+  isFeatured Boolean @default(true)
+
+  views  Int      @default(0)
+  images String[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("projects")
+}
+
+model SkillCategory {
+  id     String  @id @default(uuid())
+  label  String
+  color  String?
+  icon   String
+  skills Skill[]
+
+  @@map("skillCategories")
+}
+
+model Skill {
+  id              String        @id @default(uuid())
+  name            String
+  skillCategoryId String
+  skillCategory   SkillCategory @relation(fields: [skillCategoryId], references: [id], onDelete: Cascade)
+
+  @@map("skills")
+}
+
 model Blog {
   id         String     @id @default(uuid())
   title      String
   slug       String     @unique
   content    String
-  technology Technology
-  imageUrls  String[]
   tags       String[]
-  views      Int        @default(0)
   authorId   String
-  isDeleted  Boolean    @default(false)
-  isPublish  Boolean    @default(false)
-  author     User       @relation(fields: [authorId], references: [id])
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
+  isDeleted  Boolean    @default(false)
+  isPublish  Boolean    @default(false)
+  technology Technology
+  views      Int        @default(0)
+  imageUrls  String[]
+  author     User       @relation(fields: [authorId], references: [id])
 
   @@map("blogs")
 }
 
 model AboutMe {
-  id           String   @id @default(uuid())
+  id           String          @id @default(uuid())
   title        String
+  section      SectionType     @default(HERO)
   bio          String
   profileImage String?
   resumeLink   String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  socialLinks  SocialLinkTypes @default(GITHUB)
+
+  address     String? @default("Rajshahi, Bangladesh")
+  phoneNumber String? @default("+8801619830567")
+  email       String? @default("ranaot56@gmail.com")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("aboutMe")
 }
@@ -164,15 +180,14 @@ model Experience {
   endDate             DateTime?
   isCurrent           Boolean   @default(false)
   technologies        String[]  @default([])
-  keyAchievements     String[]  @default([])
-  keyResponsibilities String[]  @default([])
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
+  keyAchievements     String[]  @default([])
+  keyResponsibilities String[]  @default([])
 
   @@map("experiences")
 }
 
-// contact information model 
 model ContactInfo {
   id              String   @id @default(uuid())
   mobileNumber    String
@@ -186,7 +201,6 @@ model ContactInfo {
   @@map("contactInfo")
 }
 
-// ContactMessage  model
 model ContactMessage {
   id        String   @id @default(uuid())
   name      String
