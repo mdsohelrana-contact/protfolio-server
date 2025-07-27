@@ -27,4 +27,8 @@ export default {
     apiKey: process.env.CLOUDINARY_API_KEY,
     apiSecret: process.env.CLOUDINARY_API_SECRET,
   },
+  ipInfo: {
+    url: process.env.IPINFO_URL,
+    token: process.env.IPINFO_TOKEN,
+  },
 };

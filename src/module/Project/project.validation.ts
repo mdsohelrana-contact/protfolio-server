@@ -10,9 +10,6 @@ export const ProjectCategoryEnum = z.enum([
 const CreateProjectSchema = z.object({
   body: z.object({
     title: z.string().min(1, "Title is required"),
-    description: z
-      .string()
-      .min(10, "Description must be at least 10 characters"),
     images: z
       .array(z.string().url("Image must be a valid URL"))
       .nonempty("At least one image is required"),
@@ -20,6 +17,7 @@ const CreateProjectSchema = z.object({
     category: ProjectCategoryEnum.refine((val) => !!val, {
       message: "Category is required and must be a valid value",
     }),
+    projectContent: z.string(),
     demoUrl: z.string().url("Demo URL must be a valid URL"),
     githubUrl: z.string().url("GitHub URL must be a valid URL"),
   }),
@@ -28,10 +26,7 @@ const CreateProjectSchema = z.object({
 const UpdateProjectSchema = z.object({
   body: z.object({
     title: z.string().min(1, "Title is required").optional(),
-    description: z
-      .string()
-      .min(10, "Description must be at least 10 characters")
-      .optional(),
+    projectContent: z.string().optional(),
     images: z.array(z.string().url("Image must be a valid URL")).optional(),
     tags: z.array(z.string().min(1)).optional(),
     category: ProjectCategoryEnum.refine((val) => !!val, {

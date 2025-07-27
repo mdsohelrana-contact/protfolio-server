@@ -95,7 +95,6 @@ model User {
 model Projects {
   id             String          @id @default(uuid())
   title          String
-  description    String
   tags           String[]
   category       ProjectCategory @default(FULLSTACK)
   demoUrl        String          @unique
@@ -204,4 +203,118 @@ model ContactMessage {
   createdAt DateTime @default(now())
 
   @@map("contactMessages")
+}
+
+
+model ProjectContactForm {
+  id               String   @id @default(uuid())
+  name             String
+  email            String
+  phone            String?  // Optional
+  company          String?  // Optional
+  position         String?  // Optional
+  projectType      ProjectType
+  budget           BudgetRange
+  timeline         Timeline
+  message          String
+  priority         PriorityLevel
+  referralSource   ReferralSource
+  newsletter       Boolean
+  terms            Boolean
+  projectDetails   String?   // Optional
+  preferredContact ContactMethod
+  submittedAt      DateTime  @default(now())
+}
+
+model Visitor {
+  id               String          @id @default(uuid())
+  ipAddress        String
+  country          String
+  city             String
+  deviceType       DeviceType
+  browser          String
+  os               String
+  visitTime        DateTime
+  timeSpent        Int           // in minutes
+  pagesVisited     String[]        // store as text[]
+  clickedLinks     String[]        // store as text[]
+  referrer         String
+  isReturning      Boolean
+  clickedProjects  ProjectClick[]
+
+  createdAt        DateTime        @default(now())
+}
+
+model ProjectClick {
+  id                String    @id @default(uuid())
+  visitorId         String
+  visitor           Visitor   @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+
+  projectId         String
+  projectTitle      String
+  clickType         ClickType
+  timestamp         DateTime
+  timeSpentOnProject Int      // in seconds
+
+  createdAt         DateTime  @default(now())
+}
+
+enum DeviceType {
+  Desktop
+  Mobile
+  Tablet
+}
+
+enum ClickType {
+  view
+  live_demo
+  github
+  details
+}
+
+
+
+enum ProjectType {
+  web_development
+  mobile_app
+  consulting
+  other
+}
+
+enum BudgetRange {
+  under_5k
+  fiveK_15K
+  fifteenK_30K
+  thirtyK_50K
+  fiftyK_plus
+  lets_discuss
+}
+
+enum Timeline {
+  asap
+  oneMonth
+  twoToThreeMonths
+  threeToSixMonths
+  flexible
+}
+
+enum PriorityLevel {
+  low
+  medium
+  high
+  urgent
+}
+
+enum ReferralSource {
+  google
+  linkedin
+  github
+  referral
+  other
+}
+
+enum ContactMethod {
+  email
+  phone
+  both
 }

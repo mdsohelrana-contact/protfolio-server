@@ -7,6 +7,7 @@ import { ContactMessageRoutes } from "../module/ContactMessage/contactMessage.ro
 import { BlogRoutes } from "../module/Blog/blog.routes";
 import { AboutMeRoutes } from "../module/AboutMe/about.routes";
 import { ExperienceRoutes } from "../module/Experience/experience.routes";
+import { visitorRoutes } from "../module/Visitor/visitor.routes";
 
 const router = express.Router();
 
@@ -42,6 +43,10 @@ const moduleRoutes = [
   {
     path: "/experience",
     route: ExperienceRoutes,
+  },
+  {
+    path: "/visitor-track",
+    route: visitorRoutes,
   },
 ];
 
