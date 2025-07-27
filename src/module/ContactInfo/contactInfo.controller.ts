@@ -4,6 +4,7 @@ import { contactInfoService } from "./contactInfo.service";
 import responseHandler from "../../shared/responseHandler";
 
 const createContactInfo = catchAsync(async (req: Request, res: Response) => {
+
   const result = await contactInfoService.createContactInfo(
     req.body,
     req.user!

@@ -77,6 +77,7 @@ enum SocialLinkTypes {
   YOUTUBE
   WEBSITE
   RESUME
+  OTHER
 }
 
 model User {
@@ -154,11 +155,13 @@ model Blog {
 model AboutMe {
   id        String      @id @default(uuid())
   section   SectionType @default(HERO)
+  title     String?
+  subTitle  String?
   bio       String
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 
-  @@map("aboutMe")
+  @@map("about_me")
 }
 
 model Experience {
@@ -182,21 +185,37 @@ model Experience {
 model ContactInfo {
   id String @id @default(uuid())
 
+  fullName     String?
   profileImage String?
-  socialLinks  SocialLinkTypes @default(GITHUB)
   resumeLink   String?
 
-  address     String?  @default("Rajshahi, Bangladesh")
-  phoneNumber String?  @default("+8801619830567")
-  email       String?  @default("ranaot56@gmail.com")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  email       String? @default("ranaot56@gmail.com")
+  phoneNumber String? @default("+8801619830567")
+  address     String? @default("Rajshahi, Bangladesh")
+  location    String?
 
-  @@map("contactInfo")
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  SocialLink SocialLink[]
+
+  @@map("contact_info")
+}
+
+model SocialLink {
+  id        String          @id @default(uuid())
+  type      SocialLinkTypes
+  url       String
+  contactId String
+  contact   ContactInfo     @relation(fields: [contactId], references: [id])
+
+  @@unique([contactId, type])
+  @@map("social_links")
 }
 
 model ContactMessage {
-  id        String   @id @default(uuid())
+  id String @id @default(uuid())
+
+  subject   String
   name      String
   email     String
   message   String
@@ -205,14 +224,13 @@ model ContactMessage {
   @@map("contactMessages")
 }
 
-
 model ProjectContactForm {
-  id               String   @id @default(uuid())
+  id               String         @id @default(uuid())
   name             String
   email            String
-  phone            String?  // Optional
-  company          String?  // Optional
-  position         String?  // Optional
+  phone            String? // Optional
+  company          String? // Optional
+  position         String? // Optional
   projectType      ProjectType
   budget           BudgetRange
   timeline         Timeline
@@ -221,48 +239,61 @@ model ProjectContactForm {
   referralSource   ReferralSource
   newsletter       Boolean
   terms            Boolean
-  projectDetails   String?   // Optional
+  projectDetails   String? // Optional
   preferredContact ContactMethod
-  submittedAt      DateTime  @default(now())
+  submittedAt      DateTime       @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([phone])
+  @@map("projectContactForms")
 }
 
 model Visitor {
-  id               String          @id @default(uuid())
-  ipAddress        String
-  country          String
-  city             String
-  deviceType       DeviceType
-  browser          String
-  os               String
-  visitTime        DateTime
-  timeSpent        Int           // in minutes
-  pagesVisited     String[]        // store as text[]
-  clickedLinks     String[]        // store as text[]
-  referrer         String
-  isReturning      Boolean
-  clickedProjects  ProjectClick[]
+  id              String         @id @default(uuid())
+  ipAddress       String
+  country         String
+  city            String
+  deviceType      DeviceType     @default(Unknown)
+  browser         String
+  os              String
+  visitCount      Int            @default(1)
+  visitTime       DateTime
+  timeSpent       Int // in minutes
+  pagesVisited    String[] // store as text[]
+  clickedLinks    String[] // store as text[]
+  referrer        String
+  isReturning     Boolean
+  clickedProjects ProjectClick[]
 
-  createdAt        DateTime        @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ipAddress])
+  @@map("visitors")
 }
 
 model ProjectClick {
-  id                String    @id @default(uuid())
-  visitorId         String
-  visitor           Visitor   @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  id        String  @id @default(uuid())
+  visitorId String
+  visitor   Visitor @relation(fields: [visitorId], references: [id], onDelete: Cascade)
 
-  projectId         String
-  projectTitle      String
-  clickType         ClickType
-  timestamp         DateTime
-  timeSpentOnProject Int      // in seconds
+  projectId          String
+  projectTitle       String
+  clickType          ClickType
+  timestamp          DateTime
+  timeSpentOnProject Int // in seconds
 
-  createdAt         DateTime  @default(now())
+  createdAt DateTime @default(now())
 }
 
 enum DeviceType {
   Desktop
   Mobile
   Tablet
+  Unknown
 }
 
 enum ClickType {
@@ -271,8 +302,6 @@ enum ClickType {
   github
   details
 }
-
-
 
 enum ProjectType {
   web_development
