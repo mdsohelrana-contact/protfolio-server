@@ -76,29 +76,71 @@ const updateContactInfo = async (
   }
   const { SocialLink, ...restPayload } = payload;
 
-  await prisma.socialLink.deleteMany({
-    where: { contactId: contactInfoId },
-  });
+  // Update main contact info
+  if (Object.keys(restPayload).length > 0) {
+    await prisma.contactInfo.update({
+      where: { id: contactInfoId },
+      data: restPayload,
+    });
+  }
 
-  const newLinks =
-    SocialLink?.map((link) => ({
-      ...link,
-      contactId: contactInfoId,
-    })) ?? [];
+  //  Update or add social links
+  if (SocialLink && SocialLink.length > 0) {
+    for (const link of SocialLink) {
+      const existingLink = await prisma.socialLink.findFirst({
+        where: {
+          contactId: contactInfoId,
+          type: link.type,
+        },
+      });
 
-  await prisma.socialLink.createMany({
-    data: newLinks,
-  });
+      if (existingLink) {
+        await prisma.socialLink.update({
+          where: { id: existingLink.id },
+          data: {
+            url: link.url,
+          },
+        });
+      } else {
+        await prisma.socialLink.create({
+          data: {
+            ...link,
+            contactId: contactInfoId,
+          },
+        });
+      }
+    }
+  }
 
-  return await prisma.contactInfo.update({
+  // Return updated contact info
+  return await prisma.contactInfo.findUnique({
     where: { id: contactInfoId },
-    data: restPayload,
-    include: { SocialLink: true },
+    include: {
+      SocialLink: true,
+    },
   });
+};
+
+const deleteSocialLinkById = async (socialLinkId: string, user: JwtPayload) => {
+  await checkUserRole(user.email, ["OWNER"]);
+
+  const existing = await prisma.socialLink.findUnique({
+    where: { id: socialLinkId },
+  });
+
+  if (!existing) {
+    throw new AppError(status.NOT_FOUND, "Social link not found.");
+  }
+
+  await prisma.socialLink.delete({
+    where: { id: socialLinkId },
+  });
+  return { message: "Social link deleted successfully" };
 };
 
 export const contactInfoService = {
   getContactInfo,
   createContactInfo,
   updateContactInfo,
+  deleteSocialLinkById,
 };

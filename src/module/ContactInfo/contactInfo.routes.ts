@@ -16,8 +16,14 @@ router.post(
   ContactInfoControllers.createContactInfo
 );
 
-router.patch("/:id", auth("OWNER"), ContactInfoControllers.updateContactInfo);
+router.patch(
+  "/:id",
+  upload.single("file"),
+  uploadAndParse("contactInfo", "profileImage", false),
+  auth("OWNER"),
+  ContactInfoControllers.updateContactInfo
+);
 
-
+router.delete("/", auth("OWNER"), ContactInfoControllers.deleteSocialLinkById);
 
 export const ContactInfoRoutes = router;
