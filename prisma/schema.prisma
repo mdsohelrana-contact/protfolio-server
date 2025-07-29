@@ -66,6 +66,7 @@ enum SectionType {
   HERO
   ABOUT
   CONTACT
+  FOOTER
 }
 
 enum SocialLinkTypes {
