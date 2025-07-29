@@ -30,10 +30,9 @@ const updateContactInfo = catchAsync(async (req: Request, res: Response) => {
 
 const deleteSocialLinkById = catchAsync(async (req: Request, res: Response) => {
 
-  const {socialLinkId}= req.body;
 
   const result = await contactInfoService.deleteSocialLinkById(
-    socialLinkId,
+    req.params.id,
     req.user!
   );
 

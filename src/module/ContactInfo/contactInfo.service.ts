@@ -13,42 +13,51 @@ const createContactInfo = async (
 
   const { SocialLink, ...rest } = payload;
 
-  if (payload.id) {
+  // শুধুমাত্র প্রথম SocialLink নিবে যদি থাকে
+  const firstSocialLink = SocialLink && SocialLink.length > 0 ? SocialLink[0] : null;
+
+  // চেক করো ডাটাবেজে কোন ContactInfo আছে কিনা
+  const existing = await prisma.contactInfo.findFirst();
+
+  if (existing) {
+    // যদি থাকে, তাহলে আপডেট করো
     await prisma.contactInfo.update({
-      where: { id: payload.id },
+      where: { id: existing.id },
       data: {
         ...rest,
-        SocialLink: SocialLink
+        SocialLink: firstSocialLink
           ? {
-              deleteMany: {},
-              create: SocialLink.map((link: any) => ({
-                type: link.type,
-                url: link.url,
-              })),
+              deleteMany: {}, // আগের SocialLinks গুলো মুছে ফেলবে
+              create: {
+                type: firstSocialLink.type,
+                url: firstSocialLink.url,
+              },
             }
           : undefined,
       },
     });
     return { message: "Contact info updated successfully" };
+  } else {
+    // না থাকলে নতুন তৈরি করো
+    return await prisma.contactInfo.create({
+      data: {
+        ...rest,
+        SocialLink: firstSocialLink
+          ? {
+              create: {
+                type: firstSocialLink.type,
+                url: firstSocialLink.url,
+              },
+            }
+          : undefined,
+      },
+      include: {
+        SocialLink: true,
+      },
+    });
   }
-
-  return await prisma.contactInfo.create({
-    data: {
-      ...rest,
-      SocialLink: SocialLink
-        ? {
-            create: SocialLink.map((link: any) => ({
-              type: link.type,
-              url: link.url,
-            })),
-          }
-        : undefined,
-    },
-    include: {
-      SocialLink: true,
-    },
-  });
 };
+
 
 const getContactInfo = async () => {
   return await prisma.contactInfo.findFirst({
@@ -122,6 +131,7 @@ const updateContactInfo = async (
 };
 
 const deleteSocialLinkById = async (socialLinkId: string, user: JwtPayload) => {
+  console.log("🚀 ~ socialLinkId:", socialLinkId)
   await checkUserRole(user.email, ["OWNER"]);
 
   const existing = await prisma.socialLink.findUnique({

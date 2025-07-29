@@ -6,7 +6,6 @@ import { uploadAndParse } from "../../middlewares/uploadAndParse";
 
 const router = express.Router();
 
-router.get("/", ContactInfoControllers.getContactInfo);
 
 router.post(
   "/",
@@ -16,14 +15,18 @@ router.post(
   ContactInfoControllers.createContactInfo
 );
 
+
+
+router.get("/", ContactInfoControllers.getContactInfo);
+
 router.patch(
   "/:id",
-  upload.single("file"),
-  uploadAndParse("contactInfo", "profileImage", false),
   auth("OWNER"),
   ContactInfoControllers.updateContactInfo
 );
 
-router.delete("/", auth("OWNER"), ContactInfoControllers.deleteSocialLinkById);
+
+
+router.delete("/:id", auth("OWNER"), ContactInfoControllers.deleteSocialLinkById);
 
 export const ContactInfoRoutes = router;
