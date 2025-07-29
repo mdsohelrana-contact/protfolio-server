@@ -19,6 +19,8 @@ const getContactInfo = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateContactInfo = catchAsync(async (req: Request, res: Response) => {
+
+
   const result = await contactInfoService.updateContactInfo(
     req.params.id,
     req.body,
