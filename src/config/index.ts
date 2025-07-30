@@ -31,4 +31,8 @@ export default {
     url: process.env.IPINFO_URL,
     token: process.env.IPINFO_TOKEN,
   },
+  email:{
+    user:process.env.EMAIL_USER,
+    pass:process.env.EMAIL_PASS
+  }
 };

@@ -216,7 +216,6 @@ model SocialLink {
 model ContactMessage {
   id String @id @default(uuid())
 
-  subject   String
   name      String
   email     String
   message   String
