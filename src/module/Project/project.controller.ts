@@ -107,5 +107,5 @@ export const ProjectControllers = {
   hardDeleteProject,
   softDeleteProject,
   getDeletedProjects,
-  restoreProject
+  restoreProject,
 };

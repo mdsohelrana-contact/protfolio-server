@@ -3,12 +3,7 @@ import auth from "../../middlewares/auth";
 import { ProjectControllers } from "./project.controller";
 import validateRequest from "../../middlewares/validationRequest";
 import { projectSchema } from "./project.validation";
-import cloudinary from "../../utils/cloudinary";
 import upload from "../../middlewares/multer";
-import AppError from "../../middlewares/AppError";
-import status from "http-status";
-import path from "path";
-import uploadBufferToCloudinary from "../../utils/uploadToCloudinary";
 import { uploadAndParse } from "../../middlewares/uploadAndParse";
 
 const router = express.Router();
@@ -20,9 +15,7 @@ router.post(
   "/",
   upload.array("files"),
   uploadAndParse("projects", "images", true),
-
   validateRequest(projectSchema.CreateProjectSchema),
-
   auth("OWNER"),
 
   ProjectControllers.createProject

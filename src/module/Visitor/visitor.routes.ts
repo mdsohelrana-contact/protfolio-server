@@ -9,4 +9,6 @@ router.delete("/cleanup", visitorController.handleCleanupOldVisitors);
 
 router.get("/visitors", visitorController.handleGetVisitors);
 
+router.get("/analytics", visitorController.handleGetAnalyticsSummary);
+
 export const visitorRoutes = router;

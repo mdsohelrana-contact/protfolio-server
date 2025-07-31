@@ -4,9 +4,10 @@ const responseHandler = <T>(
   res: Response,
   success: boolean,
   message: string,
-  data?: T | null
+  data?: T | null,
+  statusCode = 200
 ) => {
-  res.json({
+  res.status(statusCode).json({
     success,
     message,
     data,

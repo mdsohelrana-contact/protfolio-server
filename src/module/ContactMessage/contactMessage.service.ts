@@ -6,6 +6,8 @@ import mailSender from "../../Email/mailer";
 import path from "path";
 import fs from "fs";
 import mailOptions from "../../Email/mailOptions";
+import AppError from "../../middlewares/AppError";
+import status from "http-status";
 
 const createMessage = async (payload: {
   name: string;
@@ -58,7 +60,7 @@ const deleteMessage = async (id: string, user: JwtPayload) => {
 
   const exists = await prisma.contactMessage.findUnique({ where: { id } });
   if (!exists) {
-    throw new Error("Message not found");
+    throw new AppError(status.NOT_FOUND, "Message not found.");
   }
 
   return await prisma.contactMessage.delete({ where: { id } });

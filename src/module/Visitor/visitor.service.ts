@@ -1,3 +1,5 @@
+import status from "http-status";
+import AppError from "../../middlewares/AppError";
 import prisma from "../../shared/prismaClient";
 import { extractVisitorData } from "../../utils/getVisitorData";
 
@@ -90,15 +92,13 @@ const createOrUpdateVisitor = async (req: any, visitorData: any) => {
         "Desktop",
     },
   });
+  console.log("🚀 ~ created:", created)
 
   return { data: created, isReturning: false };
 };
 
 // Get all visitors
 const getVisitors = async () => {
-
-  // ! TODO: Implement MORE DETAILS for each visitor
-
   const visitors = await prisma.visitor.findMany({
     include: {
       clickedProjects: true,
@@ -108,7 +108,143 @@ const getVisitors = async () => {
     },
   });
 
-  return visitors;
+  if (visitors.length === 0) {
+    throw new AppError(status.NOT_FOUND, "No visitors found.");
+  }
+
+  const formattedVisitors = visitors.map((visitor) => ({
+    id: visitor.id,
+    ipAddress: visitor.ipAddress,
+    country: visitor.country,
+    city: visitor.city,
+    deviceType: visitor.deviceType,
+    browser: visitor.browser,
+    os: visitor.os,
+    visitTime: visitor.visitTime.toISOString(),
+    timeSpent: visitor.timeSpent,
+    pagesVisited: visitor.pagesVisited,
+    clickedLinks: visitor.clickedLinks,
+    referrer: visitor.referrer,
+    isReturning: visitor.isReturning,
+    clickedProjects: visitor.clickedProjects.map((project) => ({
+      projectId: project.projectId,
+      projectTitle: project.projectTitle,
+      clickType: project.clickType,
+      timestamp: project.timestamp.toISOString(),
+      timeSpentOnProject: project.timeSpentOnProject,
+    })),
+  }));
+
+  return formattedVisitors;
+};
+
+// Analyze visitors
+const getAnalyticsSummary = async () => {
+
+  const visitors = await prisma.visitor.findMany({
+    include: {
+      clickedProjects: true,
+    },
+  });
+
+  if (visitors.length === 0) {
+    throw new AppError(status.NOT_FOUND, "No visitors found.");
+  }
+
+  // Total visitors
+  const totalVisitors = visitors.length;
+
+  // Unique visitors by ipAddress
+  const uniqueVisitors = new Set(visitors.map((visitor) => visitor.ipAddress))
+    .size;
+
+  // Total page views (sum of pagesVisited length)
+  const totalPageViews = visitors.reduce(
+    (sum, visitor) => sum + (visitor.pagesVisited?.length || 0),
+    0
+  );
+
+  // Average time spent (sum timeSpent / totalVisitors)
+  const totalTimeSpent = visitors.reduce(
+    (sum, visitor) => sum + (visitor.timeSpent || 0),
+    0
+  );
+  const averageTimeSpent = totalVisitors ? totalTimeSpent / totalVisitors : 0;
+
+  // Top countries count
+  const countryCountMap: Record<string, number> = {};
+  visitors.forEach(({ country }) => {
+    if (country) {
+      countryCountMap[country] = (countryCountMap[country] || 0) + 1;
+    }
+  });
+  const topCountries = Object.entries(countryCountMap)
+    .map(([country, count]) => ({ country, count }))
+    .sort((a, b) => b.count - a.count);
+
+  // Device breakdown count
+  const deviceCountMap: Record<string, number> = {};
+  visitors.forEach(({ deviceType }) => {
+    deviceCountMap[deviceType] = (deviceCountMap[deviceType] || 0) + 1;
+  });
+  const deviceBreakdown = Object.entries(deviceCountMap)
+    .map(([device, count]) => ({ device, count }))
+    .sort((a, b) => b.count - a.count);
+
+  // Top pages by views (aggregate all pagesVisited)
+  const pageViewCountMap: Record<string, number> = {};
+  visitors.forEach(({ pagesVisited }) => {
+    if (pagesVisited && pagesVisited.length) {
+      pagesVisited.forEach((page) => {
+        pageViewCountMap[page] = (pageViewCountMap[page] || 0) + 1;
+      });
+    }
+  });
+  const topPages = Object.entries(pageViewCountMap)
+    .map(([page, views]) => ({ page, views }))
+    .sort((a, b) => b.views - a.views);
+
+  // Project clicks summary
+  const projectClicksMap: Record<
+    string,
+    { projectTitle: string; clicks: number; totalTimeSpent: number }
+  > = {};
+
+  visitors.forEach(({ clickedProjects }) => {
+    clickedProjects.forEach(
+      ({ projectId, projectTitle, timeSpentOnProject }) => {
+        if (!projectClicksMap[projectId]) {
+          projectClicksMap[projectId] = {
+            projectTitle,
+            clicks: 0,
+            totalTimeSpent: 0,
+          };
+        }
+        projectClicksMap[projectId].clicks += 1;
+        projectClicksMap[projectId].totalTimeSpent += timeSpentOnProject || 0;
+      }
+    );
+  });
+
+  const projectClicks = Object.entries(projectClicksMap).map(
+    ([, { projectTitle, clicks, totalTimeSpent }]) => ({
+      projectTitle,
+      clicks,
+      avgTimeSpent: clicks ? totalTimeSpent / clicks : 0,
+    })
+  );
+
+  // Return the analytics summary
+  return {
+    totalVisitors,
+    uniqueVisitors,
+    totalPageViews,
+    averageTimeSpent,
+    topCountries,
+    deviceBreakdown,
+    topPages,
+    projectClicks,
+  };
 };
 
 // Delete old visitors
@@ -126,4 +262,5 @@ export const visitorService = {
   createOrUpdateVisitor,
   cleanupOldVisitors,
   getVisitors,
+  getAnalyticsSummary,
 };

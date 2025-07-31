@@ -28,15 +28,20 @@ const createBlog = async (payload: Blog, user: JwtPayload) => {
 };
 
 const getAllBlogs = async () => {
-  return await prisma.blog.findMany({
+  const result = await prisma.blog.findMany({
     where: {
       isDeleted: false,
-      isPublish: true,
     },
     orderBy: {
       createdAt: "desc",
     },
   });
+
+  if (result.length === 0) {
+    throw new AppError(status.NOT_FOUND, "No blogs found.");
+  }
+
+  return result;
 };
 
 const getSingleBlog = async (blogId: string) => {

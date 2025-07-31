@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import catchAsync from "../../shared/catchAsync";
 import { contactInfoService } from "./contactInfo.service";
 import responseHandler from "../../shared/responseHandler";
+import status from "http-status";
 
 const createContactInfo = catchAsync(async (req: Request, res: Response) => {
   const result = await contactInfoService.createContactInfo(
@@ -37,8 +38,9 @@ const deleteSocialLinkById = catchAsync(async (req: Request, res: Response) => {
     req.params.id,
     req.user!
   );
+  
 
-  responseHandler(res, true, "Social link deleted successfully", result);
+  responseHandler(res, true, "Social link deleted successfully", result,status.OK);
 });
 
 export const ContactInfoControllers = {

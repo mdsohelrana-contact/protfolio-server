@@ -31,7 +31,6 @@ const getAllProjects = async (category: string | undefined) => {
       where: {
         category: category as ProjectCategory,
         isDeleted: false,
-        isFeatured: true,
       },
       orderBy: {
         createdAt: "desc",

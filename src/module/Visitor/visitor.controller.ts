@@ -35,16 +35,29 @@ const handleGetVisitors = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// Get visitors analytics summary
+const handleGetAnalyticsSummary = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await visitorService.getAnalyticsSummary();
+    responseHandler(res, true, "Analytics summary fetched successfully", {
+      ...result,
+    });
+  }
+);
+
 // Delete old visitors
-const handleCleanupOldVisitors = catchAsync(async (req: Request, res: Response) => {
-  const result = await visitorService.cleanupOldVisitors();
-  responseHandler(res, true, "Old visitors cleaned up successfully", {
-    ...result,
-  });
-});
+const handleCleanupOldVisitors = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await visitorService.cleanupOldVisitors();
+    responseHandler(res, true, "Old visitors cleaned up successfully", {
+      ...result,
+    });
+  }
+);
 
 export const visitorController = {
   handleVisitorTracking,
   handleCleanupOldVisitors,
-  handleGetVisitors
+  handleGetVisitors,
+  handleGetAnalyticsSummary
 };

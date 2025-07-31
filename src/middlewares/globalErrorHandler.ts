@@ -14,6 +14,10 @@ const globalErrorHandler = (
   res: Response,
   next: NextFunction
 ) => {
+  if (res.headersSent) {
+    return;
+  }
+
   const error = err as IError;
   const statusCode = error.statusCode || status.INTERNAL_SERVER_ERROR;
 
@@ -23,8 +27,6 @@ const globalErrorHandler = (
     message: error.message || "Something went wrong",
     stack: process.env.NODE_ENV === "DEVELOPMENT" ? error.stack : undefined,
   });
-
-  next();
 };
 
 export default globalErrorHandler;
