@@ -19,7 +19,8 @@ const CreateProjectSchema = z.object({
     }),
     projectContent: z.string(),
     demoUrl: z.string().url("Demo URL must be a valid URL"),
-    githubUrl: z.string().url("GitHub URL must be a valid URL"),
+    clientRepo: z.string().url("Client Repository URL must be a valid URL"),
+    serverRepo: z.string().url("Server Repository URL must be a valid URL"),
   }),
 });
 
@@ -33,7 +34,8 @@ const UpdateProjectSchema = z.object({
       message: "Invalid category value",
     }).optional(),
     demoUrl: z.string().url("Demo URL must be a valid URL").optional(),
-    githubUrl: z.string().url("GitHub URL must be a valid URL").optional(),
+    clientRepo: z.string().url("Client Repository URL must be a valid URL").optional(),
+    serverRepo: z.string().url("Server Repository URL must be a valid URL").optional(),
   }),
 });
 

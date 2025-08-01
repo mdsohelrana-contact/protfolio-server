@@ -30,9 +30,9 @@ const handleVisitorTracking = catchAsync(
 // Get all visitors
 const handleGetVisitors = catchAsync(async (req: Request, res: Response) => {
   const result = await visitorService.getVisitors();
-  responseHandler(res, true, "Visitors fetched successfully", {
-    ...result,
-  });
+  responseHandler(res, true, "Visitors fetched successfully",
+    result
+  );
 });
 
 // Get visitors analytics summary

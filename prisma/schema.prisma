@@ -97,10 +97,14 @@ model User {
 model Projects {
   id             String          @id @default(uuid())
   title          String
+  slug           String          @unique
+  seoTitle       String?
+  seoDescription String?
   tags           String[]
   category       ProjectCategory @default(FULLSTACK)
   demoUrl        String          @unique
-  githubUrl      String          @unique
+  clientRepo     String          @unique
+  serverRepo     String          @unique
   projectContent String?
 
   isDeleted  Boolean @default(false)
@@ -135,20 +139,22 @@ model Skill {
 }
 
 model Blog {
-  id         String     @id @default(uuid())
-  title      String
-  slug       String     @unique
-  content    String
-  tags       String[]
-  authorId   String
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  isDeleted  Boolean    @default(false)
-  isPublish  Boolean    @default(false)
-  technology Technology
-  views      Int        @default(0)
-  imageUrls  String[]
-  author     User       @relation(fields: [authorId], references: [id])
+  id             String     @id @default(uuid())
+  title          String
+  slug           String     @unique
+  content        String
+  tags           String[]
+  authorId       String
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  isDeleted      Boolean    @default(false)
+  isPublish      Boolean    @default(false)
+  technology     Technology
+  views          Int        @default(0)
+  imageUrls      String[]
+  seoTitle       String?
+  seoDescription String?
+  author         User       @relation(fields: [authorId], references: [id])
 
   @@map("blogs")
 }

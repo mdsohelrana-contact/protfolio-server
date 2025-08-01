@@ -112,7 +112,7 @@ const getVisitors = async () => {
     throw new AppError(status.NOT_FOUND, "No visitors found.");
   }
 
-  const formattedVisitors = visitors.map((visitor) => ({
+ const formattedVisitors = visitors.map((visitor) => ({
     id: visitor.id,
     ipAddress: visitor.ipAddress,
     country: visitor.country,
@@ -135,7 +135,7 @@ const getVisitors = async () => {
     })),
   }));
 
-  return formattedVisitors;
+  return formattedVisitors; // ✅ Returns array
 };
 
 // Analyze visitors
@@ -171,6 +171,9 @@ const getAnalyticsSummary = async () => {
   );
   const averageTimeSpent = totalVisitors ? totalTimeSpent / totalVisitors : 0;
 
+  // Total message
+  const totalMessages = await prisma.contactMessage.count();
+
   // Top countries count
   const countryCountMap: Record<string, number> = {};
   visitors.forEach(({ country }) => {
@@ -190,6 +193,7 @@ const getAnalyticsSummary = async () => {
   const deviceBreakdown = Object.entries(deviceCountMap)
     .map(([device, count]) => ({ device, count }))
     .sort((a, b) => b.count - a.count);
+
 
   // Top pages by views (aggregate all pagesVisited)
   const pageViewCountMap: Record<string, number> = {};
@@ -237,6 +241,7 @@ const getAnalyticsSummary = async () => {
   // Return the analytics summary
   return {
     totalVisitors,
+    totalMessages,
     uniqueVisitors,
     totalPageViews,
     averageTimeSpent,

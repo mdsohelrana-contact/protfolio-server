@@ -1,49 +1,49 @@
 -- CreateEnum
-CREATE TYPE "ProjectCategory" AS ENUM ('FULLSTACK', 'FRONTEND', 'BACKEND', 'LANDING_PAGE', 'API');
+CREATE TYPE "public"."ProjectCategory" AS ENUM ('FULLSTACK', 'FRONTEND', 'BACKEND', 'LANDING_PAGE', 'API');
 
 -- CreateEnum
-CREATE TYPE "UserRole" AS ENUM ('OWNER');
+CREATE TYPE "public"."UserRole" AS ENUM ('OWNER');
 
 -- CreateEnum
-CREATE TYPE "Technology" AS ENUM ('HTML', 'CSS', 'Tailwind', 'JavaScript', 'TypeScript', 'React', 'NextJS', 'Redux', 'Zustand', 'NodeJS', 'Express', 'NestJS', 'JWT', 'OAuth', 'Bcrypt', 'Zod', 'MongoDB', 'Mongoose', 'PostgreSQL', 'Prisma', 'ShadcnUI', 'FramerMotion', 'AOS', 'Git', 'GitHub', 'VSCode', 'Postman', 'Docker', 'Vercel', 'Netlify', 'Render', 'Railway', 'Firebase', 'AWS', 'Jest', 'ReactTestingLibrary', 'WebSockets', 'SocketIO', 'RESTAPI', 'GraphQL');
+CREATE TYPE "public"."Technology" AS ENUM ('HTML', 'CSS', 'Tailwind', 'JavaScript', 'TypeScript', 'React', 'NextJS', 'Redux', 'Zustand', 'NodeJS', 'Express', 'NestJS', 'JWT', 'OAuth', 'Bcrypt', 'Zod', 'MongoDB', 'Mongoose', 'PostgreSQL', 'Prisma', 'ShadcnUI', 'FramerMotion', 'AOS', 'Git', 'GitHub', 'VSCode', 'Postman', 'Docker', 'Vercel', 'Netlify', 'Render', 'Railway', 'Firebase', 'AWS', 'Jest', 'ReactTestingLibrary', 'WebSockets', 'SocketIO', 'RESTAPI', 'GraphQL');
 
 -- CreateEnum
-CREATE TYPE "SectionType" AS ENUM ('HERO', 'ABOUT', 'CONTACT');
+CREATE TYPE "public"."SectionType" AS ENUM ('HERO', 'ABOUT', 'CONTACT', 'FOOTER');
 
 -- CreateEnum
-CREATE TYPE "SocialLinkTypes" AS ENUM ('GITHUB', 'LINKEDIN', 'TWITTER', 'INSTAGRAM', 'FACEBOOK', 'YOUTUBE', 'WEBSITE', 'RESUME', 'OTHER');
+CREATE TYPE "public"."SocialLinkTypes" AS ENUM ('GITHUB', 'LINKEDIN', 'TWITTER', 'INSTAGRAM', 'FACEBOOK', 'YOUTUBE', 'WEBSITE', 'RESUME', 'OTHER');
 
 -- CreateEnum
-CREATE TYPE "DeviceType" AS ENUM ('Desktop', 'Mobile', 'Tablet', 'Unknown');
+CREATE TYPE "public"."DeviceType" AS ENUM ('Desktop', 'Mobile', 'Tablet', 'Unknown');
 
 -- CreateEnum
-CREATE TYPE "ClickType" AS ENUM ('view', 'live_demo', 'github', 'details');
+CREATE TYPE "public"."ClickType" AS ENUM ('view', 'live_demo', 'github', 'details');
 
 -- CreateEnum
-CREATE TYPE "ProjectType" AS ENUM ('web_development', 'mobile_app', 'consulting', 'other');
+CREATE TYPE "public"."ProjectType" AS ENUM ('web_development', 'mobile_app', 'consulting', 'other');
 
 -- CreateEnum
-CREATE TYPE "BudgetRange" AS ENUM ('under_5k', 'fiveK_15K', 'fifteenK_30K', 'thirtyK_50K', 'fiftyK_plus', 'lets_discuss');
+CREATE TYPE "public"."BudgetRange" AS ENUM ('under_5k', 'fiveK_15K', 'fifteenK_30K', 'thirtyK_50K', 'fiftyK_plus', 'lets_discuss');
 
 -- CreateEnum
-CREATE TYPE "Timeline" AS ENUM ('asap', 'oneMonth', 'twoToThreeMonths', 'threeToSixMonths', 'flexible');
+CREATE TYPE "public"."Timeline" AS ENUM ('asap', 'oneMonth', 'twoToThreeMonths', 'threeToSixMonths', 'flexible');
 
 -- CreateEnum
-CREATE TYPE "PriorityLevel" AS ENUM ('low', 'medium', 'high', 'urgent');
+CREATE TYPE "public"."PriorityLevel" AS ENUM ('low', 'medium', 'high', 'urgent');
 
 -- CreateEnum
-CREATE TYPE "ReferralSource" AS ENUM ('google', 'linkedin', 'github', 'referral', 'other');
+CREATE TYPE "public"."ReferralSource" AS ENUM ('google', 'linkedin', 'github', 'referral', 'other');
 
 -- CreateEnum
-CREATE TYPE "ContactMethod" AS ENUM ('email', 'phone', 'both');
+CREATE TYPE "public"."ContactMethod" AS ENUM ('email', 'phone', 'both');
 
 -- CreateTable
-CREATE TABLE "user" (
+CREATE TABLE "public"."user" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "role" "UserRole" NOT NULL DEFAULT 'OWNER',
+    "role" "public"."UserRole" NOT NULL DEFAULT 'OWNER',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -51,13 +51,17 @@ CREATE TABLE "user" (
 );
 
 -- CreateTable
-CREATE TABLE "projects" (
+CREATE TABLE "public"."projects" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "seoTitle" TEXT,
+    "seoDescription" TEXT,
     "tags" TEXT[],
-    "category" "ProjectCategory" NOT NULL DEFAULT 'FULLSTACK',
+    "category" "public"."ProjectCategory" NOT NULL DEFAULT 'FULLSTACK',
     "demoUrl" TEXT NOT NULL,
-    "githubUrl" TEXT NOT NULL,
+    "clientRepo" TEXT NOT NULL,
+    "serverRepo" TEXT NOT NULL,
     "projectContent" TEXT,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
     "isFeatured" BOOLEAN NOT NULL DEFAULT true,
@@ -70,7 +74,7 @@ CREATE TABLE "projects" (
 );
 
 -- CreateTable
-CREATE TABLE "skillCategories" (
+CREATE TABLE "public"."skillCategories" (
     "id" TEXT NOT NULL,
     "label" TEXT NOT NULL,
     "color" TEXT,
@@ -80,7 +84,7 @@ CREATE TABLE "skillCategories" (
 );
 
 -- CreateTable
-CREATE TABLE "skills" (
+CREATE TABLE "public"."skills" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "skillCategoryId" TEXT NOT NULL,
@@ -89,7 +93,7 @@ CREATE TABLE "skills" (
 );
 
 -- CreateTable
-CREATE TABLE "blogs" (
+CREATE TABLE "public"."blogs" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
@@ -100,17 +104,19 @@ CREATE TABLE "blogs" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
     "isPublish" BOOLEAN NOT NULL DEFAULT false,
-    "technology" "Technology" NOT NULL,
+    "technology" "public"."Technology" NOT NULL,
     "views" INTEGER NOT NULL DEFAULT 0,
     "imageUrls" TEXT[],
+    "seoTitle" TEXT,
+    "seoDescription" TEXT,
 
     CONSTRAINT "blogs_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "about_me" (
+CREATE TABLE "public"."about_me" (
     "id" TEXT NOT NULL,
-    "section" "SectionType" NOT NULL DEFAULT 'HERO',
+    "section" "public"."SectionType" NOT NULL DEFAULT 'HERO',
     "title" TEXT,
     "subTitle" TEXT,
     "bio" TEXT NOT NULL,
@@ -121,7 +127,7 @@ CREATE TABLE "about_me" (
 );
 
 -- CreateTable
-CREATE TABLE "experiences" (
+CREATE TABLE "public"."experiences" (
     "id" TEXT NOT NULL,
     "position" TEXT NOT NULL,
     "company" TEXT NOT NULL,
@@ -140,7 +146,7 @@ CREATE TABLE "experiences" (
 );
 
 -- CreateTable
-CREATE TABLE "contact_info" (
+CREATE TABLE "public"."contact_info" (
     "id" TEXT NOT NULL,
     "fullName" TEXT,
     "profileImage" TEXT,
@@ -156,9 +162,9 @@ CREATE TABLE "contact_info" (
 );
 
 -- CreateTable
-CREATE TABLE "social_links" (
+CREATE TABLE "public"."social_links" (
     "id" TEXT NOT NULL,
-    "type" "SocialLinkTypes" NOT NULL,
+    "type" "public"."SocialLinkTypes" NOT NULL,
     "url" TEXT NOT NULL,
     "contactId" TEXT NOT NULL,
 
@@ -166,9 +172,8 @@ CREATE TABLE "social_links" (
 );
 
 -- CreateTable
-CREATE TABLE "contactMessages" (
+CREATE TABLE "public"."contactMessages" (
     "id" TEXT NOT NULL,
-    "subject" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "message" TEXT NOT NULL,
@@ -178,23 +183,23 @@ CREATE TABLE "contactMessages" (
 );
 
 -- CreateTable
-CREATE TABLE "projectContactForms" (
+CREATE TABLE "public"."projectContactForms" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "phone" TEXT,
     "company" TEXT,
     "position" TEXT,
-    "projectType" "ProjectType" NOT NULL,
-    "budget" "BudgetRange" NOT NULL,
-    "timeline" "Timeline" NOT NULL,
+    "projectType" "public"."ProjectType" NOT NULL,
+    "budget" "public"."BudgetRange" NOT NULL,
+    "timeline" "public"."Timeline" NOT NULL,
     "message" TEXT NOT NULL,
-    "priority" "PriorityLevel" NOT NULL,
-    "referralSource" "ReferralSource" NOT NULL,
+    "priority" "public"."PriorityLevel" NOT NULL,
+    "referralSource" "public"."ReferralSource" NOT NULL,
     "newsletter" BOOLEAN NOT NULL,
     "terms" BOOLEAN NOT NULL,
     "projectDetails" TEXT,
-    "preferredContact" "ContactMethod" NOT NULL,
+    "preferredContact" "public"."ContactMethod" NOT NULL,
     "submittedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -203,12 +208,12 @@ CREATE TABLE "projectContactForms" (
 );
 
 -- CreateTable
-CREATE TABLE "visitors" (
+CREATE TABLE "public"."visitors" (
     "id" TEXT NOT NULL,
     "ipAddress" TEXT NOT NULL,
     "country" TEXT NOT NULL,
     "city" TEXT NOT NULL,
-    "deviceType" "DeviceType" NOT NULL DEFAULT 'Unknown',
+    "deviceType" "public"."DeviceType" NOT NULL DEFAULT 'Unknown',
     "browser" TEXT NOT NULL,
     "os" TEXT NOT NULL,
     "visitCount" INTEGER NOT NULL DEFAULT 1,
@@ -225,12 +230,12 @@ CREATE TABLE "visitors" (
 );
 
 -- CreateTable
-CREATE TABLE "ProjectClick" (
+CREATE TABLE "public"."ProjectClick" (
     "id" TEXT NOT NULL,
     "visitorId" TEXT NOT NULL,
     "projectId" TEXT NOT NULL,
     "projectTitle" TEXT NOT NULL,
-    "clickType" "ClickType" NOT NULL,
+    "clickType" "public"."ClickType" NOT NULL,
     "timestamp" TIMESTAMP(3) NOT NULL,
     "timeSpentOnProject" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -239,37 +244,43 @@ CREATE TABLE "ProjectClick" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
+CREATE UNIQUE INDEX "user_email_key" ON "public"."user"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "projects_demoUrl_key" ON "projects"("demoUrl");
+CREATE UNIQUE INDEX "projects_slug_key" ON "public"."projects"("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "projects_githubUrl_key" ON "projects"("githubUrl");
+CREATE UNIQUE INDEX "projects_demoUrl_key" ON "public"."projects"("demoUrl");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "blogs_slug_key" ON "blogs"("slug");
+CREATE UNIQUE INDEX "projects_clientRepo_key" ON "public"."projects"("clientRepo");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "social_links_contactId_type_key" ON "social_links"("contactId", "type");
+CREATE UNIQUE INDEX "projects_serverRepo_key" ON "public"."projects"("serverRepo");
 
 -- CreateIndex
-CREATE INDEX "projectContactForms_email_idx" ON "projectContactForms"("email");
+CREATE UNIQUE INDEX "blogs_slug_key" ON "public"."blogs"("slug");
 
 -- CreateIndex
-CREATE INDEX "projectContactForms_phone_idx" ON "projectContactForms"("phone");
+CREATE UNIQUE INDEX "social_links_contactId_type_key" ON "public"."social_links"("contactId", "type");
 
 -- CreateIndex
-CREATE INDEX "visitors_ipAddress_idx" ON "visitors"("ipAddress");
+CREATE INDEX "projectContactForms_email_idx" ON "public"."projectContactForms"("email");
+
+-- CreateIndex
+CREATE INDEX "projectContactForms_phone_idx" ON "public"."projectContactForms"("phone");
+
+-- CreateIndex
+CREATE INDEX "visitors_ipAddress_idx" ON "public"."visitors"("ipAddress");
 
 -- AddForeignKey
-ALTER TABLE "skills" ADD CONSTRAINT "skills_skillCategoryId_fkey" FOREIGN KEY ("skillCategoryId") REFERENCES "skillCategories"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "public"."skills" ADD CONSTRAINT "skills_skillCategoryId_fkey" FOREIGN KEY ("skillCategoryId") REFERENCES "public"."skillCategories"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "blogs" ADD CONSTRAINT "blogs_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."blogs" ADD CONSTRAINT "blogs_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "public"."user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "social_links" ADD CONSTRAINT "social_links_contactId_fkey" FOREIGN KEY ("contactId") REFERENCES "contact_info"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."social_links" ADD CONSTRAINT "social_links_contactId_fkey" FOREIGN KEY ("contactId") REFERENCES "public"."contact_info"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProjectClick" ADD CONSTRAINT "ProjectClick_visitorId_fkey" FOREIGN KEY ("visitorId") REFERENCES "visitors"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "public"."ProjectClick" ADD CONSTRAINT "ProjectClick_visitorId_fkey" FOREIGN KEY ("visitorId") REFERENCES "public"."visitors"("id") ON DELETE CASCADE ON UPDATE CASCADE;

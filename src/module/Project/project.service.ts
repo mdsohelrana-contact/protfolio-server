@@ -4,14 +4,22 @@ import { JwtPayload } from "jsonwebtoken";
 import AppError from "../../middlewares/AppError";
 import status from "http-status";
 import { checkUserRole } from "../../utils/checkUserRole";
+import slugify from "../../utils/slugify";
 
 // Create a new project
 const createProject = async (payload: Projects, user: JwtPayload) => {
   await checkUserRole(user.email, ["OWNER"]);
 
+  const slug = slugify(payload.title);
+
   const exists = await prisma.projects.findFirst({
     where: {
-      OR: [{ githubUrl: payload.githubUrl }, { demoUrl: payload.demoUrl }],
+      OR: [
+        { clientRepo: payload.clientRepo },
+        { serverRepo: payload.serverRepo },
+        { demoUrl: payload.demoUrl },
+        { slug: slug },
+      ],
     },
   });
 
@@ -21,7 +29,12 @@ const createProject = async (payload: Projects, user: JwtPayload) => {
     );
   }
 
-  return await prisma.projects.create({ data: payload });
+  return await prisma.projects.create({
+    data: {
+      ...payload,
+      slug: slug,
+    },
+  });
 };
 
 // Get all projects
@@ -113,7 +126,11 @@ const updateProject = async (
 
   const urlExists = await prisma.projects.findFirst({
     where: {
-      OR: [{ githubUrl: payload.githubUrl }, { demoUrl: payload.demoUrl }],
+      OR: [
+        { clientRepo: payload.clientRepo },
+        { serverRepo: payload.serverRepo },
+        { demoUrl: payload.demoUrl },
+      ],
       NOT: { id: projectId },
     },
   });
@@ -200,7 +217,6 @@ const restoreProject = async (projectId: string, user: JwtPayload) => {
       isDeleted: false,
     },
   });
-
 };
 
 export const ProjectServices = {
@@ -211,5 +227,5 @@ export const ProjectServices = {
   hardDeleteProject,
   softDeleteProject,
   getDeletedProjects,
-  restoreProject
+  restoreProject,
 };
